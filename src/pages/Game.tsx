@@ -104,9 +104,12 @@ export const Game = ({
                 width: '210px',
             }}
         >
-            <strong>
-                {rounds}. kör: {players.at(index)?.name} ({timer} mp)
-            </strong>
+            <div style={{ justifyContent: 'space-between' }}>
+                <strong>
+                    {rounds}. kör: {players.at(index)?.name}
+                </strong>
+                <div>{timer} mp</div>
+            </div>
             <div style={{ gap: '4px' }}>
                 <input
                     style={{ minWidth: '150px' }}

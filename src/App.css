@@ -14,3 +14,7 @@ div {
 input {
     flex: 1;
 }
+
+button {
+    min-width: 23.8px;
+}
