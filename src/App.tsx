@@ -5,15 +5,19 @@ import { Route } from './enums/route';
 import { Players } from './pages/Players';
 import { useLocalStorage } from '@uidotdev/usehooks';
 import { useEffect } from 'react';
+import { LocalStorageKey } from './enums/localStorageKey';
 
 export const App = () => {
-    const [route, setRoute] = useLocalStorage<Route>('page', Route.players);
+    const [route, setRoute] = useLocalStorage<Route>(
+        LocalStorageKey.page,
+        Route.players
+    );
     const [players, setPlayers] = useLocalStorage<
         Array<{
             name: string;
             points: number;
         }>
-    >('players', []);
+    >(LocalStorageKey.players, []);
 
     useEffect(() => {
         if (route === Route.players) {
