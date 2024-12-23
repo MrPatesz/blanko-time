@@ -34,10 +34,6 @@ jobs:
             - name: Build Vite project
               run: pnpm build
 
-            # Copy index.html to 404.html to serve the same file when a file is not found
-            - name: Copy index.html to 404.html
-              run: cp dist/index.html dist/404.html
-
             # Commit the published project files to GitHub Pages branch
             - name: Commit files to GitHub Pages branch
               uses: JamesIves/github-pages-deploy-action@v4
