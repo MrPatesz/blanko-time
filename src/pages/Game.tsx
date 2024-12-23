@@ -4,8 +4,12 @@ import allWords from '../logic/words.json';
 import { useLocalStorage } from '@uidotdev/usehooks';
 import { LocalStorageKey } from '../enums/localStorageKey';
 
-const threeMinsPast = new SpeechSynthesisUtterance('3 perc eltelt!');
-const fiveMinsPast = new SpeechSynthesisUtterance('5 perc eltelt!');
+const threeMinsPast = new SpeechSynthesisUtterance(
+    '3 perc eltelt! Jóvan mehet má!'
+);
+const fiveMinsPast = new SpeechSynthesisUtterance(
+    '5 perc eltelt! Jólesz mostmá!'
+);
 
 const getWordsToCheckValidity = (input: string) => {
     return input
@@ -101,13 +105,14 @@ export const Game = ({
             }}
         >
             <strong>
-                {rounds}. kör: {players.at(index)?.name}
+                {rounds}. kör: {players.at(index)?.name} ({timer} mp)
             </strong>
-            <div>
+            <div style={{ gap: '4px' }}>
                 <input
+                    style={{ minWidth: '150px' }}
                     value={input}
                     onChange={(e) => setInput(e.currentTarget.value)}
-                />{' '}
+                />
                 {point} pont
             </div>
             <div>
@@ -130,7 +135,7 @@ export const Game = ({
                             <div
                                 style={{
                                     gap: '4px',
-                                    paddingLeft: '4px',
+                                    paddingLeft: '8px',
                                 }}
                             >
                                 <button
