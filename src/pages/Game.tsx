@@ -1,7 +1,35 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { calculatePoints } from '../logic/calculatePoints';
 import allWords from '../logic/words.json';
 import { useLocalStorage } from '@uidotdev/usehooks';
+import { LocalStorageKey } from '../enums/localStorageKey';
+
+const threeMinsPast = new SpeechSynthesisUtterance('3 perc eltelt!');
+const fiveMinsPast = new SpeechSynthesisUtterance('5 perc eltelt!');
+
+const getWordsToCheckValidity = (input: string) => {
+    return input
+        .toLowerCase()
+        .split(' ')
+        .map((word) => {
+            if (word.includes(':')) {
+                const [w, c] = word.split(':');
+                return c ? w.replace('_', c) : w;
+            }
+            return word;
+        });
+};
+
+const getWordsToCalulatePoints = (input: string) => {
+    return input
+        .toLowerCase()
+        .split(' ')
+        .map((word) => {
+            const [w] = word.split(':');
+            return w;
+        })
+        .join(' ');
+};
 
 export const Game = ({
     players,
@@ -19,38 +47,49 @@ export const Game = ({
     ) => void;
 }) => {
     const [input, setInput] = useState('');
-    const [counter, setCounter] = useLocalStorage('counter', 0);
+    const [counter, setCounter] = useLocalStorage(LocalStorageKey.counter, 0);
+    const [timer, setTimer] = useLocalStorage(LocalStorageKey.timer, 0);
 
     const index = counter % players.length;
     const rounds = Math.floor(counter / players.length) + 1;
 
-    const point = calculatePoints(input);
+    const point = calculatePoints(getWordsToCalulatePoints(input));
 
     // timer
     // multiple Blankos in one word
     // list of words / player
     // time / player!
 
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setTimer((prev) => prev + 1);
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, [setTimer]);
+
+    useEffect(() => {
+        if (timer === 180) {
+            speechSynthesis.speak(threeMinsPast);
+        } else if (timer === 300) {
+            speechSynthesis.speak(fiveMinsPast);
+        }
+    }, [timer]);
+
     return (
         <form
             onSubmit={(e) => {
                 e.preventDefault();
 
-                const words = input.split(' ');
-                const valid = words.every((w) => {
-                    if (w.includes('_')) {
-                        const [word, char] = w.split(':');
-                        return allWords.includes(
-                            char ? word.replace('_', char) : word
-                        );
-                    }
-                    return allWords.includes(w);
-                });
+                const valid = getWordsToCheckValidity(input).every((w) =>
+                    allWords.includes(w)
+                );
 
                 if (valid || window.confirm('Biztos? Nem valid elvileg!')) {
                     updatePoints(index, (prevPoints) => prevPoints + point);
                     setCounter((prev) => prev + 1);
                     setInput('');
+                    setTimer(0);
                 }
             }}
             style={{
