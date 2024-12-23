@@ -27,8 +27,7 @@ const getWordsToCalulatePoints = (input: string) => {
         .map((word) => {
             const [w] = word.split(':');
             return w;
-        })
-        .join(' ');
+        });
 };
 
 export const Game = ({
@@ -53,12 +52,14 @@ export const Game = ({
     const index = counter % players.length;
     const rounds = Math.floor(counter / players.length) + 1;
 
-    const point = calculatePoints(getWordsToCalulatePoints(input));
+    const point = getWordsToCalulatePoints(input).reduce(
+        (acc, curr) => acc + calculatePoints(curr),
+        0
+    );
 
-    // timer
+    // PWA
     // multiple Blankos in one word
-    // list of words / player
-    // time / player!
+    // stats: list of words & time / player
 
     useEffect(() => {
         const interval = setInterval(() => {

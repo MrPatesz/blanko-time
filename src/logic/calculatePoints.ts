@@ -1,22 +1,24 @@
 import { chars } from './chars';
 
 export const calculatePoints = (word: string) => {
-    let remainingWord = word.toLowerCase();
+    const letters = word.toLowerCase().split('');
     let points = 0;
 
-    Object.entries(chars.double).forEach(([key, value]) => {
-        if (remainingWord.includes(key)) {
-            points += value;
-            remainingWord = remainingWord.replace(key, '');
-        }
-    });
+    for (let i = 0; i < letters.length; i++) {
+        const char1 = letters[i];
+        const char2 = letters[i + 1];
+        const twoChars = `${char1}${char2}`;
 
-    remainingWord.split('').forEach((char) => {
-        points +=
-            char in chars.single
-                ? chars.single[char as keyof typeof chars.single]
-                : 0;
-    });
+        if (twoChars in chars.double) {
+            points += chars.double[twoChars as keyof typeof chars.double];
+            i++;
+        } else {
+            points +=
+                char1 in chars.single
+                    ? chars.single[char1 as keyof typeof chars.single]
+                    : 0;
+        }
+    }
 
     return points;
 };
