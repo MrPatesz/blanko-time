@@ -16,6 +16,7 @@ export const App = () => {
         Array<{
             name: string;
             points: number;
+            timeWasted: number;
         }>
     >(LocalStorageKey.players, []);
 
@@ -31,7 +32,11 @@ export const App = () => {
                 <Players
                     onSubmit={(players) => {
                         setPlayers(
-                            players.map((name) => ({ name, points: 0 }))
+                            players.map((name) => ({
+                                name,
+                                points: 0,
+                                timeWasted: 0,
+                            }))
                         );
                         setRoute(Route.game);
                     }}
@@ -52,6 +57,18 @@ export const App = () => {
                             return prev.toSpliced(index, 1, {
                                 ...prevPlayer,
                                 points: getPoints(prevPlayer.points),
+                            });
+                        })
+                    }
+                    updateTime={(index, addTime) =>
+                        setPlayers((prev) => {
+                            const prevPlayer = prev.at(index);
+                            if (!prevPlayer) {
+                                return prev;
+                            }
+                            return prev.toSpliced(index, 1, {
+                                ...prevPlayer,
+                                timeWasted: prevPlayer.timeWasted + addTime,
                             });
                         })
                     }

@@ -38,16 +38,19 @@ export const Game = ({
     players,
     newGame,
     updatePoints,
+    updateTime,
 }: {
     players: Array<{
         name: string;
         points: number;
+        timeWasted: number;
     }>;
     newGame: () => void;
     updatePoints: (
         index: number,
         getPoints: (prevPoints: number) => number
     ) => void;
+    updateTime: (index: number, addTime: number) => void;
 }) => {
     const [input, setInput] = useState('');
     const [counter, setCounter] = useLocalStorage(LocalStorageKey.counter, 0);
@@ -92,6 +95,7 @@ export const Game = ({
 
                 if (valid || window.confirm('Biztos? Nem valid elvileg!')) {
                     updatePoints(index, (prevPoints) => prevPoints + point);
+                    updateTime(index, timer);
                     setCounter((prev) => prev + 1);
                     setInput('');
                     setTimer(0);
@@ -101,7 +105,7 @@ export const Game = ({
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '8px',
-                width: '210px',
+                width: '250px',
             }}
         >
             <div style={{ justifyContent: 'space-between' }}>
@@ -127,18 +131,20 @@ export const Game = ({
             <table>
                 <tr>
                     <th>Játékos</th>
+                    <th>Idő (p)</th>
                     <th>Pontszám</th>
                     <th>Módosít</th>
                 </tr>
                 {players.map((player, index) => (
                     <tr key={index}>
                         <td>{player.name}</td>
+                        <td>{Math.round(player.timeWasted / 60)}</td>
                         <td>{player.points}</td>
                         <td>
                             <div
                                 style={{
                                     gap: '4px',
-                                    paddingLeft: '8px',
+                                    paddingLeft: '6px',
                                 }}
                             >
                                 <button
