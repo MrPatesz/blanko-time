@@ -3,6 +3,7 @@ import { calculatePoints } from '../logic/calculatePoints';
 import allWords from '../logic/words.json';
 import { useLocalStorage } from '@uidotdev/usehooks';
 import { LocalStorageKey } from '../enums/localStorageKey';
+import { Player } from '../types/player';
 
 const threeMinsPast = new SpeechSynthesisUtterance(
     '3 perc eltelt! Jóvan mehet má!'
@@ -37,20 +38,14 @@ const getWordsToCalulatePoints = (input: string) => {
 export const Game = ({
     players,
     newGame,
-    updatePoints,
-    updateTime,
+    updatePlayer,
 }: {
-    players: Array<{
-        name: string;
-        points: number;
-        timeWasted: number;
-    }>;
+    players: Array<Player>;
     newGame: () => void;
-    updatePoints: (
+    updatePlayer: (
         index: number,
-        getPoints: (prevPoints: number) => number
+        getNewPlayer: (prevPlayer: Player) => Player
     ) => void;
-    updateTime: (index: number, addTime: number) => void;
 }) => {
     const [input, setInput] = useState('');
     const [counter, setCounter] = useLocalStorage(LocalStorageKey.counter, 0);
@@ -94,8 +89,11 @@ export const Game = ({
                 );
 
                 if (valid || window.confirm('Biztos? Nem valid elvileg!')) {
-                    updatePoints(index, (prevPoints) => prevPoints + point);
-                    updateTime(index, timer);
+                    updatePlayer(index, (prevPlayer) => ({
+                        ...prevPlayer,
+                        timeWasted: prevPlayer.timeWasted + timer,
+                        points: prevPlayer.points + point,
+                    }));
                     setCounter((prev) => prev + 1);
                     setInput('');
                     setTimer(0);
@@ -150,10 +148,10 @@ export const Game = ({
                                 <button
                                     type="button"
                                     onClick={() =>
-                                        updatePoints(
-                                            index,
-                                            (prevPoints) => prevPoints + 1
-                                        )
+                                        updatePlayer(index, (prevPlayer) => ({
+                                            ...prevPlayer,
+                                            points: prevPlayer.points + 1,
+                                        }))
                                     }
                                 >
                                     +
@@ -161,10 +159,10 @@ export const Game = ({
                                 <button
                                     type="button"
                                     onClick={() =>
-                                        updatePoints(
-                                            index,
-                                            (prevPoints) => prevPoints - 1
-                                        )
+                                        updatePlayer(index, (prevPlayer) => ({
+                                            ...prevPlayer,
+                                            points: prevPlayer.points - 1,
+                                        }))
                                     }
                                 >
                                     -

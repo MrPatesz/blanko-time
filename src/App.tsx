@@ -6,19 +6,17 @@ import { Players } from './pages/Players';
 import { useLocalStorage } from '@uidotdev/usehooks';
 import { useEffect } from 'react';
 import { LocalStorageKey } from './enums/localStorageKey';
+import { Player } from './types/player';
 
 export const App = () => {
     const [route, setRoute] = useLocalStorage<Route>(
         LocalStorageKey.page,
         Route.players
     );
-    const [players, setPlayers] = useLocalStorage<
-        Array<{
-            name: string;
-            points: number;
-            timeWasted: number;
-        }>
-    >(LocalStorageKey.players, []);
+    const [players, setPlayers] = useLocalStorage<Array<Player>>(
+        LocalStorageKey.players,
+        []
+    );
 
     useEffect(() => {
         if (route === Route.players) {
@@ -48,28 +46,17 @@ export const App = () => {
                 <Game
                     players={players}
                     newGame={() => setRoute(Route.players)}
-                    updatePoints={(index, getPoints) =>
+                    updatePlayer={(index, getNewPlayer) =>
                         setPlayers((prev) => {
                             const prevPlayer = prev.at(index);
                             if (!prevPlayer) {
                                 return prev;
                             }
-                            return prev.toSpliced(index, 1, {
-                                ...prevPlayer,
-                                points: getPoints(prevPlayer.points),
-                            });
-                        })
-                    }
-                    updateTime={(index, addTime) =>
-                        setPlayers((prev) => {
-                            const prevPlayer = prev.at(index);
-                            if (!prevPlayer) {
-                                return prev;
-                            }
-                            return prev.toSpliced(index, 1, {
-                                ...prevPlayer,
-                                timeWasted: prevPlayer.timeWasted + addTime,
-                            });
+                            return prev.toSpliced(
+                                index,
+                                1,
+                                getNewPlayer(prevPlayer)
+                            );
                         })
                     }
                 />
